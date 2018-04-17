@@ -116,4 +116,71 @@ describe("MoveAdder", () => {
         //Assert
         expect(action).to.throw("This Pokemon already knows this move.");
     });
+
+    it("dialog menu opens when pokemon tries to learn move", (): void => {
+        //Arrange
+        const { fsp } = stubBlankGame();
+        const pokemon: IPokemon = fsp.equations.newPokemon({
+            level: 5,
+            title: "SQUIRTLE".split(""),
+        });
+        const peck: IMove = {
+            title: "Peck",
+            remaining: 10,
+            uses: 10,
+        };
+
+        //Act
+        fsp.moveadder.startDialog(pokemon, peck);
+
+        //Assert
+        expect(fsp.menuGrapher.getActiveMenuName()).to.be.equal("GeneralText");
+    });
+
+    it("teaches you a move when you have an open move slot and begin move dialog", (): void => {
+        //Arrange
+        const { fsp } = stubBlankGame();
+        const pokemon: IPokemon = fsp.equations.newPokemon({
+            level: 5,
+            title: "SQUIRTLE".split(""),
+            moves: [
+                {title: "Bide", remaining: 10, uses: 10}],
+        });
+        const peck: IMove = {
+            title: "Peck",
+            remaining: 10,
+            uses: 10,
+        };
+
+        //Act
+        fsp.moveadder.startDialog(pokemon, peck);
+
+        //Assert
+        expect(pokemon.moves[1]).to.be.equal(undefined);
+    });
+
+    it("does not teach you a move when you have four moves and refuse to learn more", (): void => {
+        //Arrange
+        const { fsp } = stubBlankGame();
+        const pokemon: IPokemon = fsp.equations.newPokemon({
+            level: 5,
+            title: "SQUIRTLE".split(""),
+            moves: [
+                {title: "Bide", remaining: 10, uses: 10},
+                {title: "Bite", remaining: 10, uses: 10},
+                {title: "Bubble", remaining: 10, uses: 10},
+                {title: "Roar", remaining: 10, uses: 10}],
+        });
+        const peck: IMove = {
+            title: "Peck",
+            remaining: 10,
+            uses: 10,
+        };
+
+        //Act
+        fsp.moveadder.startDialog(pokemon, peck);
+
+        //Assert
+        expect(pokemon.moves[1]).to.be.equal(undefined);
+    });
 });
